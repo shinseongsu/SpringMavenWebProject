@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="LoginAccessDenied" class="com.spring.shop.config.security.LoginAccessDeniedHandler"></bean>
+	<bean id="LoginSuccess" class="com.spring.shop.config.security.LoginSuccessHandler"></bean>
+	<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<bean id="UserDetailService" class="com.spring.shop.config.security.UserDetailsService" />
+	
+	<security:http auto-config="true" use-expressions="true" >
+		
+		<security:intercept-url pattern="/resources/**" access="permitAll" />
+		<security:intercept-url pattern="/sample/all" access="permitAll" />
+		<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')" />
+		<!-- <security:access-denied-handler error-page="/accessError" /> -->
+		<security:access-denied-handler ref="LoginAccessDenied" />
+		
+		<!-- <security:form-login /> -->
+		<security:form-login login-page="/Login" authentication-success-handler-ref="LoginSuccess" />
+		
+		<security:logout logout-url="/Logout" invalidate-session="true" delete-cookies="remember-me,JSESSION_ID" />
+		
+		<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800" />
+
+	</security:http>
+	
+	
+	<security:authentication-manager>
+		
+		<security:authentication-provider
+				user-service-ref="UserDetailService">
+					
+			<security:password-encoder ref="bcryptPasswordEncoder" />
+		</security:authentication-provider>
+	
+	</security:authentication-manager>
+
+</beans>

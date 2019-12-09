@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:facebook="http://www.springframework.org/schema/social/facebook"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/social/facebook http://www.springframework.org/schema/social/spring-social-facebook.xsd">
+
+	<bean id="connectionFactory"
+		class="org.springframework.social.facebook.connect.FacebookConnectionFactory">
+		<constructor-arg value="${facebook.appId}" />	
+		<constructor-arg value="${facebook.appSecret}" />
+	</bean>
+	
+	<bean id="oAuth2Parameters"
+		class="org.springframework.social.oauth2.OAuth2Parameters">
+		<property name="scope" value="email" />
+		<property name="redirectUri" value="http://localhost:7000/facebookSignInCallback" />
+	</bean>
+		
+	<bean id="googleOAuth2Template" class="org.springframework.social.google.connect.GoogleOAuth2Template">
+		<constructor-arg value="${google.appId}" />
+		<constructor-arg value="${google.appSecret}" />
+	</bean>		
+	
+	<bean id="googleOAuth2Parameters"
+		class="org.springframework.social.oauth2.OAuth2Parameters">
+		<property name="scope" value="profile" />
+		<property name="redirectUri" value="http://localhost:7000/googleSignInCallback" />	
+	</bean>
+	
+	<bean id="authInfo" class="com.spring.shop.AuthInfo">
+		<constructor-arg value="${google.appId}" />
+		<constructor-arg value="${google.appSecret}" />
+	</bean>
+	
+	<bean id="connectionTwitter" class="org.springframework.social.twitter.connect.TwitterConnectionFactory">
+		<constructor-arg value="${twitter.appId}" />
+		<constructor-arg value="${twitter.appSecret}"/>
+	</bean>
+	
+	<bean id="twitterOAuth2Parameters" 
+			class="org.springframework.social.oauth2.OAuth2Parameters">
+		<property name="scope" value="email" />
+		<property name="redirectUri" value="http://localhost:7000/twitterSignInCallback"></property>		
+	</bean>	
+	
+
+</beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gamil.com" />
+		<property name="port" value="465" />
+		<property name="username" value="아이디 " />
+		<property name="password" value="비밀번호" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smpt.starttls.enable">true</prop>
+				<prop key="mail.smt.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.debug"></prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 정기적으로 메일을 보내는 경우 송수신 메일 주소와 제목을 미리 지정해서 보낼 수 있습니다. -->
+	<bean id="preConfigureMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="to" value="아이디" />
+		<property name="from" value="아이디" />
+		<property name="subject" value="테스트 메일입니다." />
+	</bean>
+
+</beans>

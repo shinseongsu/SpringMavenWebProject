@@ -1,0 +1,214 @@
+@charset "UTF-8";
+
+@font-face {
+	font-family: Poppins-Regular;
+	src: url('/ttf/Poppins-Regular.ttf'); 
+}
+@font-face {
+	font-family: Poppins-Medium;
+	src: url('/ttf/Poppins-Medium.ttf'); 
+}
+@font-face {
+	font-family: Poppins-Bold;
+	src: url('/ttf/Poppins-Bold.ttf'); 
+}
+@font-face {
+	font-family: Poppins-SemiBold;
+	src: url('/ttf/Poppins-SemiBold.ttf'); 
+}
+
+* {
+	margin: 0px;
+	padding: 0px;
+	box-sizing: border-box;
+}
+
+body, html {
+	height: 100%;
+	background: #ddd;
+	font-family: Poppins-Regualr, sans-serif;
+}
+
+a {
+	font-family: Poppins-Refualr;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #666666;
+	margin: 0px;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+}
+
+a:focus {
+	outline: none !important;
+}
+
+a:hover {
+	text-decoration: none;
+	color: #a64bf4;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0px;
+}
+
+p {
+	font-family: Poppins-Regular;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #666666;
+	margin: 0px;
+}
+
+ul, li {
+	margin: 0px;
+	list-style-type: none;
+}
+
+input {
+	outline: none;
+	border: none;
+	width: 100%;
+	margin-top: 0;
+	background-color: transparent;
+}
+
+input:focus {
+	border-color: transparent !important;
+}
+
+input:focus::-webkit-input-placeholder { color: transparent; }
+input:focus:-moz-placeholder { color: transparent; }
+input:focus::-moz-placeholder { color: transparent; }
+input:focus:-ms-input-placeholder { color: transparent; }
+
+input::-webkit-input-placeholder { color: #adadad; }
+input:-moz-placeholder { color: #adadad; }
+input::-moz-placeholder { color: #adadad; }
+input:-ms-input-placeholder { color: #adadad; }
+
+input[type="button"] {
+	outline: none !important;
+	border: none;
+	background: transparent;
+}
+
+input[type="button"]:hover {
+	cursor: pointer;
+}
+
+input[type="submit"] {
+	outline: none !important;
+	border: none;
+	background: transparent;
+}
+
+input[type="submit"]:hover {
+	cursor: pointer;
+}
+
+.limiter {
+	width: 100%;
+	margin: 0 auto;
+	background: #ddd;
+}
+
+.register-container {
+	width: 100%;
+	min-height: 100vh;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	padding: 15px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+.register-wrap {
+	width: 500px;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+	padding: 65px 55px 54px 55px;
+}
+
+.register-form {
+	width: 100%;
+	padding-bottom: 49px;
+}
+
+.register-form-title {
+	display: block;
+	font-family: Poppins-Bold;
+	font-size: 39px;
+	color: #333333;
+	line-height: 1.2;
+	text-align: center;
+}
+
+.input_username {
+	position: relative;
+}
+
+.fa-user {
+	position: relative;
+	font-size: 20px !important;
+}
+
+.fa-lock {
+	position: relative;
+	font-size: 20px !important;
+}
+
+.fa-at{
+	position: relative;
+	font-size: 20px !important;
+}
+
+.fa-mobile {
+	position: relative;
+	font-size: 20px !important;
+}
+
+.fa-map-marker{
+	position: relative;
+	font-size: 20px !important;
+}
+
+label{
+	position: absolute;
+	color: RGBA(55, 73, 87, 0.8);
+	-webkit-transform-origin: left;
+    -ms-transform-origin: left;
+    transform-origin: left;
+  	-webkit-transition: all 0.3s ease;
+  	-o-transition: all 0.3s ease;
+  	transition: all 0.3s ease;
+}
+
+input:focus ~ label {
+	color: #a64bf4;
+}
+
+.after {
+	width: 100%;
+  	height: 2px;
+  	background: -webkit-gradient(linear, left top, right top, color-stop(50%, RGBA(254, 253, 255, 1.00)), color-stop(50%, transparent));
+  	background: -webkit-linear-gradient(left, RGBA(254, 253, 255, 1.00) 50%, transparent 50%);
+  	background: -o-linear-gradient(left, RGBA(254, 253, 255, 1.00) 50%, transparent 50%);
+  	background: linear-gradient(to right, RGBA(254, 253, 255, 1.00) 50%, transparent 50%);
+  	background-color: RGBA(55, 73, 87, 0.8);
+  	background-size: 200% 100%;
+  	background-position: 100% 0;
+  	-webkit-transition: all 0.3s ease;
+  	-o-transition: all 0.3s ease;
+  	transition: all 0.3s ease;
+}
