@@ -29,4 +29,9 @@ public class SampleController {
 		return "sample/admin";
 	}
 	
+	@GetMapping("/test")
+	public String test(){
+		return "email/MailContent.html";
+	}
+	
 }

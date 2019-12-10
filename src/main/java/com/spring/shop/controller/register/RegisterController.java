@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.shop.VO.MemberVO;
 import com.spring.shop.config.api.APICaptchaNkey;
+import com.spring.shop.config.email.MailService;
 import com.spring.shop.serviceImpl.member.MemberServiceImpl;
 
 @Controller
@@ -27,6 +28,9 @@ public class RegisterController {
 	
 	@Autowired
 	public PasswordEncoder pwencoder;
+	
+	@Autowired
+	private MailService mailService;
 	
 	APICaptchaNkey api = new APICaptchaNkey();
 	
@@ -78,8 +82,11 @@ public class RegisterController {
 						 			 @RequestParam("email") String email,
 						 			 @RequestParam("tel") String tel,
 						 			 @RequestParam("address") String address,
-						 			 HttpServletResponse response) throws Exception{
-
+						 			 HttpServletResponse response,
+						 			 HttpServletRequest request) throws Exception{
+		
+		String path = request.getSession().getServletContext().getRealPath("src/main/webapp/WEB-INF/views/email/MailContent.html");
+		
 		response.setContentType("text/html; charset=UTF-8");
 		
 		MemberVO member = new MemberVO();
@@ -102,6 +109,10 @@ public class RegisterController {
 		PrintWriter out = response.getWriter();
 		
 		if(result == "true") {
+			String message = mailService.EmailForm("Register", path);
+			message.replace("_USERID_", username);
+			mailService.sendMail(email, "회원가입을 환영합니다", message);
+			
 			out.println("<script>");
 			out.println("alert('회원가입에 성공하였습니다.');");
 			out.println("location.href='/';");
