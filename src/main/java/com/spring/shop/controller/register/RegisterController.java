@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.shop.VO.MemberVO;
 import com.spring.shop.config.api.APICaptchaNkey;
@@ -39,7 +40,7 @@ public class RegisterController {
 	public String overlapper(@RequestParam("id") String id,
 									 HttpServletRequest request,
 									 HttpServletResponse response) throws Exception {
-		System.out.println("11");
+
 		String checkId = memberServiceImple.idConfirm(id);
 		
 		if(checkId == null) {
@@ -125,6 +126,13 @@ public class RegisterController {
 		}
 		
 		return null;
+	}
+	
+	@RequestMapping(value="/Idfinder", method = RequestMethod.POST)
+	public ModelAndView Idfinder (ModelAndView model) {
+		model.setViewName("Register/Idfinder");
+		
+		return model;
 	}
 	
 }
