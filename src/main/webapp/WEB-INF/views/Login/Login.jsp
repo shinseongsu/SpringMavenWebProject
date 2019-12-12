@@ -43,10 +43,10 @@
 					
 					<div class="text">
 						<input type="checkbox" name="remember-me"> Remember Me
-							<a href="#" class="text-text">
+							<a href="/Idfinder" class="text-text">
 								패스워드 찾기
 							</a>
-							<a href="#" class="text-text">
+							<a href="/Register" class="text-text">
 								회원가입
 							</a>
 					</div>
