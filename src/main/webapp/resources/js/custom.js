@@ -33,4 +33,17 @@ $(document).ready(function() {
 	$("span").on("click", function() {
 		$("article").removeClass("on");
 	});
+	
+	$("#logout").on("click", function(e) {
+		e.preventDefault();
+		
+		var token = $("meta[name='_csrf']").attr("content");
+	    
+		$.post("/Logout" , {
+			_csrf : token
+		}, function(data) {
+			location.reload();
+		});
+		
+	});
 });
