@@ -9,11 +9,12 @@ import lombok.Getter;
 @Getter
 @Setter
 public class MainVO {
+	
 	private String title;
-	private String content;
+	private String content_pic;
+	private String content_s;
 	private Date regDate;
 	private Date updDate;
-	private int price;
 	private String evnet;
 	
 	

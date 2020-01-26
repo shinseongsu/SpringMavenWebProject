@@ -11,4 +11,8 @@ public class APIKeyVO {
 	private String CAPTCHA_KEY;
 	private String Imagedir;
 	
+	private String appId;
+	private String appSecret;
+	private String accessToken;
+	private String accessSecretToken;
 }
