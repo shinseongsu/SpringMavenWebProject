@@ -111,7 +111,7 @@ public class RegisterController {
 		
 		if(result == "true") {
 			String message = mailService.EmailForm("Register", path);
-			message.replace("_USERID_", username);
+			message = message.replaceAll("_USERID_", username);
 			mailService.sendMail(email, "회원가입을 환영합니다", message);
 			
 			out.println("<script>");
@@ -128,7 +128,7 @@ public class RegisterController {
 		return null;
 	}
 	
-	@RequestMapping(value="/Idfinder", method = RequestMethod.POST)
+	@RequestMapping(value="/Idfinder", method = RequestMethod.GET)
 	public ModelAndView Idfinder (ModelAndView model) {
 		model.setViewName("Register/Idfinder");
 		
