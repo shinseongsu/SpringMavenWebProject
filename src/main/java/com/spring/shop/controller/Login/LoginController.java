@@ -1,10 +1,16 @@
 package com.spring.shop.controller.Login;
 
+import java.io.Reader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONObject;
@@ -19,7 +25,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.social.MissingAuthorizationException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.facebook.api.Facebook;
@@ -35,6 +46,9 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.social.twitter.api.Twitter;
+import org.springframework.social.twitter.api.TwitterProfile;
+import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +61,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.shop.VO.APIKeyVO;
 import com.spring.shop.VO.AuthInfo;
+import com.spring.shop.VO.AuthVO;
+import com.spring.shop.VO.MemberVO;
+import com.spring.shop.VO.SecurityUser;
 
 @Controller
 public class LoginController {
@@ -112,7 +130,7 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "/facebookSignInCallback", method = { RequestMethod.GET, RequestMethod.POST })
-	public String facebookSignInCallback(@RequestParam String code) throws Exception {
+	public String facebookSignInCallback(@RequestParam String code, HttpSession session, HttpServletRequest request) throws Exception {
 		try {
 			oAuth2Parameters = (OAuth2Parameters) context.getBean("oAuth2Parameters");
 			String redirectUri = oAuth2Parameters.getRedirectUri();
@@ -141,6 +159,30 @@ public class LoginController {
 				System.out.println("유저 id : " + userProfile.getId());
 				System.out.println("유저 name : " + userProfile.getName());
 				
+				MemberVO vo = new MemberVO();
+				AuthVO authvo = new AuthVO();
+				
+				authvo.setAuth("ROLE_SOCIAL");
+				authvo.setUserid(userProfile.getId());
+				
+				List<AuthVO> list = Arrays.asList(authvo);
+				
+				//vo.setUserid(userProfile.getId());
+				vo.setUserName(userProfile.getName());
+				vo.setUserid(userProfile.getName());
+				vo.setAuthList(list);
+				vo.setUserpw("unknown");
+				vo.setEmail(userProfile.getEmail());
+				vo.setEnabled(true);
+				
+				session.setAttribute("user_id", vo.getUserName());
+				
+				UserDetails user = new SecurityUser(vo);
+				
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); 
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				
 			} catch(MissingAuthorizationException e ) { 
 				e.printStackTrace();
 			}
@@ -154,10 +196,9 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "/googleSignInCallback", method = { RequestMethod.GET, RequestMethod.POST } )
-	public String googleSignInCallback(HttpServletRequest request) throws Exception {
+	public String googleSignInCallback(HttpServletRequest request, HttpSession session) throws Exception {
 		oAuth2Parameters = (OAuth2Parameters) context.getBean("googleOAuth2Parameters");
 		String code = request.getParameter("code");
-		System.out.println(code);
 		
 		RestTemplate restTemplate = new RestTemplate();
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -167,48 +208,118 @@ public class LoginController {
 		parameters.add("redirect_uri", oAuth2Parameters.getRedirectUri());
 		parameters.add("grant_type", "authorization_code");
 		
-		 HttpHeaders headers = new HttpHeaders();
-	     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-	     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(parameters, headers);
-	     ResponseEntity<Map> responseEntity = restTemplate.exchange("https://www.googleapis.com/oauth2/v4/token", HttpMethod.POST, requestEntity, Map.class);
-	     Map<String, Object> responseMap = responseEntity.getBody();
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+	    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(parameters, headers);
+	    ResponseEntity<Map> responseEntity = restTemplate.exchange("https://www.googleapis.com/oauth2/v4/token", HttpMethod.POST, requestEntity, Map.class);
+	    Map<String, Object> responseMap = responseEntity.getBody();
 		
-	     String[] tokens = ((String)responseMap.get("id_token")).split("\\.");
-	     Base64 base64 = new Base64(true);
-	     String body = new String(base64.decode(tokens[1]));
+	    String[] tokens = ((String)responseMap.get("id_token")).split("\\.");
+	    Base64 base64 = new Base64(true);
+	    String body = new String(base64.decode(tokens[1]));
 	        
-	     System.out.println(tokens.length);
-	     System.out.println(new String(Base64.decodeBase64(tokens[0]), "utf-8"));
-	     System.out.println(new String(Base64.decodeBase64(tokens[1]), "utf-8"));
+	    System.out.println(tokens.length);
+	    System.out.println(new String(Base64.decodeBase64(tokens[0]), "utf-8"));
+	    System.out.println(new String(Base64.decodeBase64(tokens[1]), "utf-8"));
 	     
-	     String resultString = new String(Base64.decodeBase64(tokens[1]), "utf-8");
+	    String resultString = new String(Base64.decodeBase64(tokens[1]), "utf-8");
 	     
-	     JSONParser json = new JSONParser();
-	     Object obj = json.parse(resultString);
-	     JSONObject jsonobject = (JSONObject) obj;
+	    JSONParser json = new JSONParser();
+	    Object obj = json.parse(resultString);
+	    JSONObject jsonobject = (JSONObject) obj;
 	     
-	     System.out.println("name:" + (String) jsonobject.get("name"));
-	     System.out.println("picture:" + (String) jsonobject.get("picture"));
-	     System.out.println("given_name:" + (String) jsonobject.get("given_name"));
-	     System.out.println("family_name:" + (String) jsonobject.get("family_name"));
-	     System.out.println("locale:" + (String) jsonobject.get("locale"));
+	    System.out.println("name:" + (String) jsonobject.get("name"));
+	    System.out.println("picture:" + (String) jsonobject.get("picture"));
+	    System.out.println("given_name:" + (String) jsonobject.get("given_name"));
+	    System.out.println("family_name:" + (String) jsonobject.get("family_name"));
+	    System.out.println("locale:" + (String) jsonobject.get("locale"));
 	 
-	     ObjectMapper mapper = new ObjectMapper();
-	     Map<String, String> result = mapper.readValue(body, Map.class);
-	     System.out.println(result.get(""));
+	    ObjectMapper mapper = new ObjectMapper();
+	    Map<String, String> result = mapper.readValue(body, Map.class);
+	    System.out.println(result.get(""));
 	     
-	     return "redirect:/";
+	    MemberVO vo = new MemberVO();
+	    AuthVO authvo = new AuthVO();
+	     
+	    authvo.setAuth("ROLE_SOCIAL");
+		authvo.setUserid((String) jsonobject.get("name"));
+
+		List<AuthVO> list = Arrays.asList(authvo);
+			
+		vo.setUserName((String) jsonobject.get("name"));
+		vo.setUserid((String) jsonobject.get("name"));
+		vo.setAuthList(list);
+		vo.setUserpw("unknown");
+		vo.setEmail("");
+		vo.setEnabled(true);
+			
+		session.setAttribute("user_id", vo.getUserName());
+			
+		UserDetails user = new SecurityUser(vo);
+		 
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); 
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		 
+	    return "redirect:/";
 	}
 	
 	@RequestMapping(value = "/twitterSignInCallback", method = { RequestMethod.GET, RequestMethod.POST })
-	public String twitterCallback() {
+	public String twitterCallback(HttpServletRequest request, HttpSession session) {
+		
+		System.out.println("!!!!!!!1");
+		
+		APIKeyVO vo = (APIKeyVO) context.getBean("twitterAPI");
+		
+		System.out.println("==============");
+		System.out.println(vo.getAppId());
+		System.out.println(vo.getAppSecret());
+		System.out.println(vo.getAccessToken());
+		System.out.println(vo.getAccessSecretToken());
+		System.out.println("==============");
+		
+		Twitter twitter = new TwitterTemplate(vo.getAppId(), vo.getAppSecret(), vo.getAccessToken(), vo.getAccessSecretToken());
+		
+		TwitterProfile profile = twitter.userOperations().getUserProfile();
+		
+		String profileId = twitter.userOperations().getScreenName();
+		long profileName = twitter.userOperations().getProfileId();
+		
+		System.out.println(profile);
+		System.out.println(profileName);
+		System.out.println(profileId + "!!!!!!!!!!!!!!");
+		
+		MemberVO membervo = new MemberVO();
+	    AuthVO authvo = new AuthVO();
+	     
+	    authvo.setAuth("ROLE_SOCIAL");
+		authvo.setUserid(profileId);
+
+		List<AuthVO> list = Arrays.asList(authvo);
+			
+		membervo.setUserName(profileId);
+		membervo.setUserid(profileId);
+		membervo.setAuthList(list);
+		membervo.setUserpw("unknown");
+		membervo.setEmail("");
+		membervo.setEnabled(true);
+			
+		session.setAttribute("user_id", membervo.getUserName());
+			
+		UserDetails user = new SecurityUser(membervo);
+		 
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); 
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		 
 		
 		return "redirect:/";
 	}
 	
 	@RequestMapping(value = "/Logout", method = { RequestMethod.GET, RequestMethod.POST })
-	public void customLogout() {
+	public String customLogout() {
 		System.out.println("custom logout");
+		return "redirect:/";
 	}
 	
 }
