@@ -52,18 +52,19 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 			System.out.println(roleNames.get(i));
 		}
 		
+		String location = "/";
+		
 		// 관리자 권한이 있으면 관리자 페이지로..
 		if(roleNames.contains("ROLE_ADMIN")) {
-			response.sendRedirect("/sample/admin");
+			location = "/sample/admin";
 		}
 		
 		// member권한 일 경우 첫 메인 페이지로..
 		if(roleNames.contains("ROLE_MEMBER")) {
-			response.sendRedirect("/sample/member");
+			location = "/sample/member";
 		}
 		
-		
-		response.sendRedirect("/");
+		response.sendRedirect(location);
 	}
 
 }
