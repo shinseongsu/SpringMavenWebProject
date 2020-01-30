@@ -5,8 +5,22 @@
 <mapper namespace="Main-Mapping">
 	
 	<select id="MainList" resultType="MainVO">
+		SELECT A.TITLE     AS TITLE
+		     , A.CONTENT AS content_pic
+		     , B.CONTENT AS content_s
+		     , A.REGDATE   AS regDate
+		     , A.UPDDATE   AS updDate
+		     , A.EVENT     AS evnet 
+  		  FROM HOME_LIST A LEFT JOIN HOME_LIST B ON A.TITLE = B.TITLE  
+                                        AND A.CONTENT <![CDATA[ != ]]> B.CONTENT
+                                        AND A.PRICE <![CDATA[< ]]> B.PRICE
+		 WHERE B.TITLE IS NOT NULL
+	</select>
+	
+	<select id="Categories" resultType="java.util.Map">
 		SELECT * 
-		  FROM HOME_LIST
+		  FROM SYSCODE
+		 WHERE SUBSTR(CD, 0, 3) = 'SYS'
 	</select>
 	
 </mapper>
