@@ -1,6 +1,7 @@
 package com.spring.shop.serviceImpl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,11 @@ public class MainServiceImpl implements MainService{
 	@Override
 	public List<MainVO> MainList() {
 		return mainDao.MainList();
+	}
+
+	@Override
+	public List<Map<String, String>> Categories() {
+		return mainDao.Categories();
 	}
 	
 }
