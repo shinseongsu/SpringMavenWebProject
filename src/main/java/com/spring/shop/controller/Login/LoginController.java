@@ -1,8 +1,10 @@
 package com.spring.shop.controller.Login;
 
 import java.io.Reader;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -66,6 +68,7 @@ import com.spring.shop.VO.AuthInfo;
 import com.spring.shop.VO.AuthVO;
 import com.spring.shop.VO.MemberVO;
 import com.spring.shop.VO.SecurityUser;
+import com.spring.shop.log.Dao.LogDao;
 
 @Controller
 public class LoginController {
@@ -80,6 +83,8 @@ public class LoginController {
 	private GoogleOAuth2Template googleOAuth2Template;
 	@Autowired
 	private TwitterConnectionFactory connectionTwitter;
+	@Autowired
+	private LogDao log;
 	
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
@@ -183,6 +188,16 @@ public class LoginController {
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				
+				InetAddress local = InetAddress.getLocalHost();
+				String ip = local.getHostAddress();
+				
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("ID", userProfile.getEmail());
+				map.put("IP_ADDRESS", ip);
+				map.put("LOG_STATUS", "FACEBOOK");
+				
+				log.Login_log(map);
+				
 			} catch(MissingAuthorizationException e ) { 
 				e.printStackTrace();
 			}
@@ -261,11 +276,21 @@ public class LoginController {
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		 
+		InetAddress local = InetAddress.getLocalHost();
+		String ip = local.getHostAddress();
+		
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("ID", vo.getUserName());
+		map.put("IP_ADDRESS", ip);
+		map.put("LOG_STATUS", "GOOGLE");
+		
+		log.Login_log(map);
+		
 	    return "redirect:/";
 	}
 	
 	@RequestMapping(value = "/twitterSignInCallback", method = { RequestMethod.GET, RequestMethod.POST })
-	public String twitterCallback(HttpServletRequest request, HttpSession session) {
+	public String twitterCallback(HttpServletRequest request, HttpSession session) throws Exception {
 		
 		System.out.println("!!!!!!!1");
 		
@@ -311,7 +336,16 @@ public class LoginController {
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()); 
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		 
+		
+		InetAddress local = InetAddress.getLocalHost();
+		String ip = local.getHostAddress();
+		
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("ID", membervo.getUserName());
+		map.put("IP_ADDRESS", ip);
+		map.put("LOG_STATUS", "TWITTER");
+		
+		log.Login_log(map);
 		
 		return "redirect:/";
 	}
